@@ -18,7 +18,7 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 
-//Schema
+
 const formData = new mongoose.Schema({
   name: String,
   age: Number,

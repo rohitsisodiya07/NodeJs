@@ -17,7 +17,7 @@ const app = express();
 const port = 5000;
 app.use(cors());
 
-//Schema
+Schema
 const studentData = new mongoose.Schema({
   data: mongoose.Schema.Types.Mixed,
 });
@@ -362,6 +362,9 @@ app.get("/addData", async (req, res) => {
 app.get("/", (req, res) => {
   res.send("Students Data is Running.......");
 });
+
+const userRoute = require('./Route/userRoute')
+app.use('/user', userRoute)
 
 app.listen(port, () => {
   console.log(`Server is Running on port${port}`);

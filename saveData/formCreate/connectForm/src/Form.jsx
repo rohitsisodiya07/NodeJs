@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const Form = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  console.log(">>>>>>>>id", id);
+  // console.log(">>>>>>>>id", id);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -96,14 +96,14 @@ const Form = () => {
     e.preventDefault();
 
     if (validate()) {
+      console.log(">>>>>formdata", formData);
+      
       try {
         if (id) {
-          // UPDATE
           await axios.patch(`http://localhost:5000/formUpdate/${id}`, formData);
 
           alert("Data Updated Successfully");
         } else {
-          // CREATE
           await axios.post("http://localhost:5000/formInformation", formData);
 
           alert("Data Submitted Successfully");
@@ -116,14 +116,14 @@ const Form = () => {
           email: "",
           phone: "",
           degree: "",
-          status : "Active",
+          status: "Active",
         });
 
         setErrors({});
 
         navigate("/ShowData");
       } catch (err) {
-        console.error(err);
+        console.log(err);
       }
     }
   };
