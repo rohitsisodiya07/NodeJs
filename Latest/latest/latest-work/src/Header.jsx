@@ -14,20 +14,43 @@ const Header = () => {
 
   return (
     <>
-      <div className="bg-linear-to-r bg-amber-600 shadow-lg">
+      <div className="bg-amber-600 shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-white">Task Management</h1>
+          <h1 className="text-3xl font-bold text-white">
+            Task Management
+          </h1>
 
           {token && (
             <div className="flex items-center gap-4">
-              <div className="text-white text-right">
-                <p className="font-semibold">{user?.name}</p>
-                <p className="text-sm opacity-80">{user?.email}</p>
+
+              <img
+                src={
+                  user?.image ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    user?.name || "User"
+                  )}`
+                }
+                alt="Profile" 
+                className="w-30 h-30 rounded-full object-cover border-2 border-white shadow-md"
+              />
+
+              <div className="text-white">
+                <p className="font-semibold text-lg">{user?.name}</p>
+                <p className="text-sm opacity-90">{user?.email}</p>
               </div>
+
+
+              <Link
+                to="/ResetPassword"
+                className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium transition"
+              >
+                Reset Password
+              </Link>
+
 
               <button
                 onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium"
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition"
               >
                 Logout
               </button>
@@ -35,39 +58,33 @@ const Header = () => {
           )}
         </div>
 
-        <div className="flex justify-center gap-8 py-4 text-lg font-medium">
-          <Link to="/" className="text-white hover:text-yellow-300 transition">
-            Signup
-          </Link>
 
-          <Link
-            to="/Login"
-            className="text-white hover:text-yellow-300 transition"
-          >
-            Login
-          </Link>
+        {token && (
+          <div className="flex justify-center gap-10 py-4 text-lg font-medium">
+            <Link
+              to="/AllPosts"
+              className="text-white hover:text-yellow-300 transition"
+            >
+              Active Tasks
+            </Link>
 
-          <Link
-            to="/AllPosts"
-            className="text-white hover:text-yellow-300 transition"
-          >
-            Active Tasks
-          </Link>
+            <Link
+              to="/InactivePost"
+              className="text-white hover:text-yellow-300 transition"
+            >
+              Inactive Tasks
+            </Link>
 
-          <Link
-            to="/InactivePost"
-            className="text-white hover:text-yellow-300 transition"
-          >
-            Inactive Tasks
-          </Link>
-          <Link
-            to="/MyTask"
-            className="text-white hover:text-yellow-300 transition"
-          >
-            My Task
-          </Link>
-        </div>
+            <Link
+              to="/MyTask"
+              className="text-white hover:text-yellow-300 transition"
+            >
+              My Task
+            </Link>
+          </div>
+        )}
       </div>
+
 
       {token && (
         <Link

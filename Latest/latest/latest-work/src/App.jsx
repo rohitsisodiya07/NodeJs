@@ -19,28 +19,23 @@ import MyTask from "./MyTask";
 function App() {
   return (
     <BrowserRouter>
-      <Header />
-
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Signup />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/ForgetPassword" element={<ForgetPassword />} />
         <Route path="/ResetPassword" element={<ResetPassword />} />
 
-        {/* <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Form />
-            </ProtectedRoute>
-          }
-        /> */}
+        {/* Protected Routes */}
 
         <Route
           path="/student/update/:id"
           element={
             <ProtectedRoute>
-              <Form />
+              <>
+                <Header />
+                <Form />
+              </>
             </ProtectedRoute>
           }
         />
@@ -49,7 +44,10 @@ function App() {
           path="/AllStudent"
           element={
             <ProtectedRoute>
-              <AllStudent />
+              <>
+                <Header />
+                <AllStudent />
+              </>
             </ProtectedRoute>
           }
         />
@@ -58,7 +56,10 @@ function App() {
           path="/student/getting/:id"
           element={
             <ProtectedRoute>
-              <ViewStudent />
+              <>
+                <Header />
+                <ViewStudent />
+              </>
             </ProtectedRoute>
           }
         />
@@ -67,58 +68,82 @@ function App() {
           path="/Inactive"
           element={
             <ProtectedRoute>
-              <Inactive />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/Post"
-          element={
-            <ProtectedRoute>
-              <Post />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/post/update/:id"
-          element={
-            <ProtectedRoute>
-              <Post />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/AllPosts"
-          element={
-            <ProtectedRoute>
-              <AllPosts />
+              <>
+                <Header />
+                <Inactive />
+              </>
             </ProtectedRoute>
           }
         />
 
-        {/* View Page */}
+        <Route
+          path="/Post"
+          element={
+            <ProtectedRoute>
+              <>
+                <Header />
+                <Post />
+              </>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/post/update/:id"
+          element={
+            <ProtectedRoute>
+              <>
+                <Header />
+                <Post />
+              </>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/AllPosts"
+          element={
+            <ProtectedRoute>
+              <>
+                <Header />
+                <AllPosts />
+              </>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/post/:id"
           element={
             <ProtectedRoute>
-              <SinglePost />
+              <>
+                <Header />
+                <SinglePost />
+              </>
             </ProtectedRoute>
           }
         />
-        
+
         <Route
           path="/InactivePost"
           element={
             <ProtectedRoute>
-              <InactivePost />
+              <>
+                <Header />
+                <InactivePost />
+              </>
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/AdminShow"
           element={
             <ProtectedRoute>
-              <AdminShow />
+              <>
+                <Header />
+                <AdminShow />
+              </>
             </ProtectedRoute>
           }
         />
@@ -127,7 +152,10 @@ function App() {
           path="/MyTask"
           element={
             <ProtectedRoute>
-              <MyTask />
+              <>
+                <Header />
+                <MyTask />
+              </>
             </ProtectedRoute>
           }
         />

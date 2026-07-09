@@ -2,12 +2,23 @@ const SignupModel = require("../Model/signupModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const secretKey = "rohitsisodiyachann";
+const sendEmail = require("../Utility/helper");
+const googleTTS = require("google-tts-api");
+const { uploadImage } = require("../Utility/cloudinary");
 
 // create user
 const signup = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+    // Check required fields
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    // Check existing user
     const existingUser = await SignupModel.findOne({ email });
 
     if (existingUser) {
@@ -16,31 +27,93 @@ const signup = async (req, res) => {
       });
     }
 
-    const saltRounds = 10;
+    // Check image
+    if (!req.files || !req.files.student) {
+      return res.status(400).json({
+        message: "Please upload an image",
+      });
+    }
 
-    const salt = bcrypt.genSaltSync(saltRounds);
-    console.log(">>>>>>salt", salt);
+    // Hash Password
+    const hash = bcrypt.hashSync(password, 10);
 
-    const hash = bcrypt.hashSync(password, salt);
-    console.log(">>>>>>>hash", hash);
+    // Upload Image to Cloudinary
+    const uploadData = await uploadImage(req.files);
 
-    const data = {
+    if (!uploadData.length) {
+      return res.status(400).json({
+        message: "Image upload failed",
+      });
+    }
+
+    const image = uploadData[0].secure_url;
+
+    // Create User
+    const result = await SignupModel.create({
       name,
       email,
       password: hash,
-      role,
-    };
+      role: role || "user",
+      image,
+    });
 
-    const savedData = new SignupModel(data);
-    console.log(">>>>data", data);
-
-    const result = await savedData.save();
-
-    return res.status(201).json({
+    res.status(201).json({
       message: "Signup Successfully",
       result,
     });
+
+    sendEmail(
+      email,
+      "🎉 Welcome to React S",
+      `
+  <div style="max-width:600px;margin:auto;background:#f9fafb;padding:20px;font-family:Arial,sans-serif;">
+    
+    <div style="background:#2563eb;padding:30px;text-align:center;border-radius:12px 12px 0 0;">
+      <h1 style="color:white;margin:0;">Welcome to React S 🚀</h1>
+    </div>
+
+    <div style="background:white;padding:30px;border:1px solid #e5e7eb;">
+      <h2 style="color:#111827;">Hello ${name} 👋</h2>
+
+      <p style="color:#4b5563;font-size:16px;">
+        Congratulations! Your account has been created successfully.
+      </p>
+
+      <p style="color:#4b5563;">
+        Thank you for registering with us. We are excited to have you on our platform.
+      </p>
+
+      <div style="text-align:center;margin-top:30px;">
+        <a
+          href="royalmart-store.netlify.app"
+          style="
+            background:#2563eb;
+            color:white;
+            text-decoration:none;
+            padding:12px 24px;
+            border-radius:8px;
+            display:inline-block;
+          "
+        >
+          Login Now
+        </a>
+      </div>
+
+      <p style="margin-top:40px;color:#6b7280;">
+        Best Regards,<br>
+        <strong>Team React S</strong>
+      </p>
+    </div>
+
+    <div style="text-align:center;padding:20px;color:#9ca3af;font-size:14px;">
+      © 2026 React S. All Rights Reserved.
+    </div>
+  </div>
+  `,
+    ).catch((err) => console.log("Email Error:", err));
   } catch (error) {
+    console.log(error);
+
     return res.status(500).json({
       message: error.message,
     });
@@ -51,10 +124,8 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(">>>>>password", password);
 
     const result = await SignupModel.findOne({ email });
-    console.log(">>>>>>result", result);
 
     if (!result) {
       return res.status(404).json({
@@ -63,7 +134,6 @@ const login = async (req, res) => {
     }
 
     const match = await bcrypt.compare(password, result.password);
-    console.log(">>>>>match", match);
 
     if (!match) {
       return res.status(400).json({
@@ -74,13 +144,14 @@ const login = async (req, res) => {
     const token = jwt.sign(
       {
         id: result._id,
+        email: result.email,
+        role: result.role,
       },
       secretKey,
       {
         expiresIn: "1d",
       },
     );
-    console.log(">>>>>token", token);
 
     return res.status(200).json({
       message: "Login Successfully",
@@ -90,6 +161,7 @@ const login = async (req, res) => {
         name: result.name,
         email: result.email,
         role: result.role,
+        image: result.image, // Cloudinary Image URL
       },
     });
   } catch (error) {
@@ -194,6 +266,14 @@ const getAllData = async (req, res) => {
   const users = await SignupModel.find();
   return res.status(200).json(users);
 };
+
+const url = googleTTS.getAudioUrl("Aagle do din Coaching ka Off hain", {
+  lang: "en",
+  slow: false,
+  host: "https://translate.google.com",
+});
+console.log(url);
+
 module.exports = {
   signup,
 

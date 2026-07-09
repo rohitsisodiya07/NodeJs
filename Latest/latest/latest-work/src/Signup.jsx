@@ -1,20 +1,33 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 const Signup = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
+    role: "user",
+    student: null,
   });
 
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    if (e.target.type === "file") {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.files[0],
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
   };
 
   const validate = () => {
@@ -36,31 +49,56 @@ const Signup = () => {
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
+    if (!formData.student) {
+      newErrors.student = "Image is required";
+    }
 
     setErrors(newErrors);
-
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validate()) {
-      alert("Signup Successful!");
+    if (!validate()) return;
 
-      console.log(formData);
+    setLoading(true);
+
+    try {
+      const data = new FormData();
+
+      data.append("name", formData.name);
+      data.append("email", formData.email);
+      data.append("password", formData.password);
+      data.append("role", "user");
+      data.append("student", formData.student);
 
       const response = await axios.post(
         "http://localhost:4000/userSignup/signup",
-        formData,
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-      console.log(">>>>>>response", response.data.result);
+
+      alert(response.data.message);
 
       setFormData({
         name: "",
         email: "",
         password: "",
+        role: "user",
+        student: null,
       });
+
+      navigate("/Login");
+    } catch (error) {
+      console.log(error);
+      alert(error.response?.data?.message || "Signup Failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,12 +150,65 @@ const Signup = () => {
             )}
           </div>
 
+          <div>
+            <input
+              type="file"
+              name="student"
+              accept="image/*"
+              onChange={handleChange}
+              className="w-full border p-3 rounded-lg"
+            />
+
+            {errors.student && (
+              <p className="text-red-500 text-sm">{errors.student}</p>
+            )}
+          </div>
+
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
+            className={`w-full  cursor-pointer p-3 rounded-lg text-white transition ${loading
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+              }`}
           >
-            Signup
+            {loading ? (
+              <div className="flex justify-center items-center gap-2">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+                Signing Up...
+              </div>
+            ) : (
+              "Signup"
+            )}
           </button>
+
+          <div className="text-center">
+            <p className="text-center mt-4 text-gray-600">
+              Already have an account{" "}?
+              <Link to="/Login" className="text-blue-600 hover:underline">
+                Login
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

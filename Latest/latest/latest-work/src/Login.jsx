@@ -51,6 +51,11 @@ const Login = () => {
 
         localStorage.setItem("user", JSON.stringify(response.data.user));
 
+        console.log(
+          "LocalStorage User:",
+          JSON.parse(localStorage.getItem("user"))
+        );
+
         setFormData({
           email: "",
           password: "",
@@ -61,7 +66,7 @@ const Login = () => {
         // } else {
         //   navigate("/all-posts");
         // }
-        navigate('/Post')
+        navigate("/Post");
       } catch (error) {
         alert(error.response?.data?.message || "Login Failed");
       }
@@ -104,14 +109,7 @@ const Login = () => {
             )}
           </div>
 
-          <div className="flex justify-between">
-            <Link
-              to="/ResetPassword"
-              className="text-sm text-blue-600 hover:underline"
-            >
-              Reset Password
-            </Link>
-
+          <div className="flex justify-end">
             <Link
               to="/ForgetPassword"
               className="text-sm text-blue-600 hover:underline"

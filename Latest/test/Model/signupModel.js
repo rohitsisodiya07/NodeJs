@@ -22,6 +22,9 @@ const signupSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
+    image: {
+      type: String,
+    },
   },
   {
     timestamps: true,

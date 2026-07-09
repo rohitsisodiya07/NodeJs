@@ -33,11 +33,16 @@ const Post = () => {
         },
       );
 
+      console.log("API Response:", response.data);
+
       setUsers(response.data);
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
+      console.log(error.response.data);
     }
   };
+  console.log("Current User:", currentUser);
+  console.log("Users:", users);
 
   const fetchTask = async () => {
     try {
@@ -48,6 +53,8 @@ const Post = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      console.log(response.data);
 
       setFormData({
         title: response.data.title || "",
@@ -191,10 +198,24 @@ const Post = () => {
               <option value="">Select User</option>
 
               {users
-                .filter((user) => user._id !== currentUser.id)
+                .filter((user) => {
+                  // khud ko task nahi de sakta
+                  if (user._id === currentUser.id) return false;
+
+                  // agar current user admin nahi hai,
+                  // to admin ko dropdown me mat dikhao
+                  if (
+                    currentUser.role !== "admin" &&
+                    user.role === "admin"
+                  ) {
+                    return false;
+                  }
+
+                  return true;
+                })
                 .map((user) => (
                   <option key={user._id} value={user._id}>
-                    {user.name}
+                    {user.name} ({user.role})
                   </option>
                 ))}
             </select>
